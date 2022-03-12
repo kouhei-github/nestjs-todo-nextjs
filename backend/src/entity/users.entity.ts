@@ -13,4 +13,7 @@ export class User {
 
     @Column({length: 300})
     email: string;
+
+    @Column({length: 300})
+    niokname: string;
 }

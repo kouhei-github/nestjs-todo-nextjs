@@ -14,8 +14,9 @@ import { TasksModule } from './tasks/tasks.module';
       "username": "todo-user",
       "password": "todo",
       "database": "nestjs-todo-nextjs",
-      "synchronize": false, //trueにするとDB接続時に自動マイグレーションが行われる
-      "entities": ["dist/entity/*.entity.{ts,js}"],
+      // "synchronize": false, //trueにするとDB接続時に自動マイグレーションが行われる
+      "synchronize": true,      // モデル同期(trueで同期)
+      "entities": [__dirname + '/**/*.entity.{js,ts}'],
       "migrations": ["dist/migration/*.ts"],
       "cli": {
         "entitiesDir": "dist/entity",

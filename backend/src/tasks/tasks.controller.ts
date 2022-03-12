@@ -1,44 +1,54 @@
-import { Body, Controller, Post, Delete, Get, Param, ParseIntPipe, Patch, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put,  UsePipes, ValidationPipe } from '@nestjs/common';
 import { TaskPropertyDto } from './dto/task-property.dto';
 import { TaskStatusPipe } from './pipe/task-status.pipe';
+import { TaskTitlePipe } from './pipe/task-title.pipe';
+import { Task } from './tasks.entity';
+import { TasksService } from './tasks.service';
 
 @Controller('tasks')
 export class TasksController {
+    constructor(
+        private tasksService: TasksService
+    ) {}
 
-    //curl -X GET http://localhost:13000/tasks
     @Get()
-    getTasks() {
-        return "getTasks Success!"
+    getTasks(): Promise<Task[]> {
+        return this.tasksService.getTasks();
     }
 
-    // curl -X GET http://localhost:13000/tasks/1
     @Get('/:id')
     getTaskById(
-        @Param('id', ParseIntPipe) id: number) {
-        return `getTaskById Success! Parameter [id:${id}]`
+        @Param('id', ParseIntPipe) id: number): Promise<Task> {
+        return this.tasksService.getTaskById(id);
     }
 
-    // curl -X POST http://localhost:13000/tasks -d 'title=TEST' -d 'description=NestJS'
     @Post()
     @UsePipes(ValidationPipe)
     createTask(
-        @Body() taskPropertyDto: TaskPropertyDto) {
-        const { title, description } = taskPropertyDto
-        return `createTask Success! Prameter [title:${title}, descritpion:${description}]`
+        @Body() taskPropertyDto: TaskPropertyDto
+    ): Promise<Task> {
+        return this.tasksService.createTask(taskPropertyDto);
     }
 
-    //curl -X DELETE http://localhost:13000/tasks/1
     @Delete('/:id')
     deleteTask(
-        @Param('id', ParseIntPipe) id: number) {
-        return `deleteTask Success! Prameter [id:${id}]`
+        @Param('id', ParseIntPipe) id: number): Promise<void> {
+        return this.tasksService.deleteTask(id);
     }
 
-    //curl -X PATCH http://localhost:13000/tasks/1 -d 'status=DONE'
     @Patch('/:id')
     updateTask(
         @Param('id', ParseIntPipe) id: number,
-        @Body('status',TaskStatusPipe) status: string ) {
-        return `updateTask Success! Prameter [id:${id}, status:${status}]`
+        @Body('status',TaskStatusPipe) status: string ): Promise<Task> {
+        return this.tasksService.updateTask(id, status);
+    }
+
+    @Put('/:id')
+    updateTaskAll(
+        @Param('id', ParseIntPipe) id: number,
+        @Body('status',TaskStatusPipe) status: string,
+        @Body('title',TaskTitlePipe) title: string ,
+    ): Promise<Task> {
+        return this.tasksService.updateTitleStatus(id, status, title);
     }
 }
